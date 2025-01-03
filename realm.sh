@@ -89,7 +89,19 @@ WantedBy=multi-user.target" > /etc/systemd/system/realm.service
     if [ ! -f /root/realm/config.toml ]; then
         touch /root/realm/config.toml
     fi
+# 添加默认的 [endpoints] 配置
+    endpoints_count=$(grep -c '^\[\[endpoints\]\]' /root/realm/config.toml)
 
+    if [ "$endpoints_count" -eq 0 ]; then
+        # 如果没有找到 [[endpoints]] 配置块，则添加一个默认的
+        echo "[[endpoints]]
+# 备注: 默认规则
+listen = \"0.0.0.0:10000\"
+remote = \"www.google.com:443\"" >> /root/realm/config.toml
+        echo "[[endpoints]] 默认规则已添加到 config.toml 文件。"
+    else
+        echo "[[endpoints]] 配置已存在，跳过添加。"
+    fi
 # 检查 config.toml 中是否已经包含 [network] 配置块
     network_count=$(grep -c '^\[network\]' /root/realm/config.toml)
 
