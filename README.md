@@ -20,12 +20,6 @@
 
 更新请运行删除脚本代码 rm realm.sh 后再次运行以下代码
 
-国外机器
-
-wget -N https://raw.githubusercontent.com/qqrrooty/EZrealm/main/realm.sh && chmod +x realm.sh && ./realm.sh
-
-国内机器
-
-wget -N https://cf.ghproxy.cc/https://raw.githubusercontent.com/qqrrooty/EZrealm/main/CN/realm.sh && chmod +x realm.sh && ./realm.sh
+wget -N https://github.com/chushu1945/EZrealm/raw/refs/heads/main/realm.sh && chmod +x realm.sh && ./realm.sh
 
 再次运行本脚本只需要输入./realm.sh回车即可
