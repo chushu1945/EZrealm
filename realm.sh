@@ -63,9 +63,43 @@ show_menu() {
 deploy_realm() {
     mkdir -p /root/realm
     cd /root/realm
-    wget -O realm.tar.gz https://github.com/zhboner/realm/releases/download/v2.7.0/realm-x86_64-unknown-linux-gnu.tar.gz
+
+    # 检测系统架构
+    ARCH=$(uname -m)
+    
+    # 根据架构选择对应的文件名
+    case $ARCH in
+        "x86_64")
+            FILE_NAME="realm-x86_64-unknown-linux-gnu.tar.gz"
+            ;;
+        "aarch64")
+            FILE_NAME="realm-aarch64-unknown-linux-gnu.tar.gz"
+            ;;
+        "armv7l")
+            FILE_NAME="realm-armv7-unknown-linux-gnueabihf.tar.gz"
+            ;;
+        "arm")
+            FILE_NAME="realm-arm-unknown-linux-gnueabi.tar.gz"
+            ;;
+        *)
+            echo "不支持的架构: $ARCH"
+            return 1
+            ;;
+    esac
+
+    # 下载对应架构的文件
+    DOWNLOAD_URL="https://github.com/zhboner/realm/releases/download/v2.7.0/${FILE_NAME}"
+    echo "正在下载: $DOWNLOAD_URL"
+    
+    if ! wget -O realm.tar.gz "$DOWNLOAD_URL"; then
+        echo "下载失败"
+        return 1
+    fi
+
+    # 解压和设置权限
     tar -xvf realm.tar.gz
     chmod +x realm
+
     # 创建服务文件
     echo "[Unit]
 Description=realm
@@ -83,7 +117,10 @@ ExecStart=/root/realm/realm -c /root/realm/config.toml
 
 [Install]
 WantedBy=multi-user.target" > /etc/systemd/system/realm.service
+
     systemctl daemon-reload
+    
+    echo "部署完成，架构: $ARCH"   
 
     # 服务启动后，检查config.toml是否存在，如果不存在则创建
     if [ ! -f /root/realm/config.toml ]; then
